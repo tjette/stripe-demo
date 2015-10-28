@@ -1,4 +1,5 @@
 var React = require('react');
+var request = require('superagent');
 
 var LineItem = React.createClass({
   render: function() {
@@ -28,6 +29,15 @@ handleClick: function(e){
 
 handleStripeToken: function(token){
   console.log('token', token);
+
+  var id = this.props.model.invoiceId;
+  request
+    .post('/api/invoice/' + id + 
+      '/payment')
+    .end(function(err, res) {
+      if(err) return console.error(err); 
+      console.log("response from payment: ", res);
+    });
 },
 
 render: function() {
@@ -44,7 +54,11 @@ render: function() {
       // You can access the token ID with `token.id`
     
   });
-    
+
+
+  //Just for testing in the console. Remove before production
+    window.handleStripeToken = this.handleStripeToken;
+
     var invoice = this.props.model;
     var invoiceId = invoice.invoiceId;
     var lineItemModels = invoice.lineItems;
