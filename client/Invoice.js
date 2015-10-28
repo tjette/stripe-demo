@@ -15,7 +15,36 @@ var LineItem = React.createClass({
 });
 
 module.exports = React.createClass({
-  render: function() {
+handleClick: function(e){
+  var invoice = this.props.model;
+  var description = 'Invoice# ' + invoice.invoiceId;
+  this.stripeCheckout.open({
+      name: 'Travis Jette',
+      description: description,
+      amount: invoice.total
+    });
+    e.preventDefault();
+},
+
+handleStripeToken: function(token){
+  console.log('token', token);
+},
+
+render: function() {
+  console.debug('render.model:', this.props.model);
+  
+
+  this.stripeCheckout = StripeCheckout.configure({
+    key: 'pk_test_P5VCIAn9TaffqxE4GCmedQps',
+    image: '/img/mcs-logo-128x128.png',
+    locale: 'auto',
+    token: this.handleStripeToken
+      
+      // Use the token to create the charge with a server-side script.
+      // You can access the token ID with `token.id`
+    
+  });
+    
     var invoice = this.props.model;
     var invoiceId = invoice.invoiceId;
     var lineItemModels = invoice.lineItems;
@@ -70,6 +99,9 @@ module.exports = React.createClass({
             </tr>
           </tfoot>
         </table>
+
+        <button onClick={this.handleClick}>Pay Now</button>
+        
 
       </div>
     );
